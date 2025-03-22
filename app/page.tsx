@@ -1,4 +1,3 @@
-
 import Landing from '@/components/globalComponents/landing'
 import React from 'react'
 

@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ExternalLink, Globe, Search, Users } from "lucide-react";
+import { Calendar, ExternalLink, Globe, Search, Users, Info, ArrowUp } from "lucide-react";
 import { FloatingCard } from "@/components/ui/floating-card";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const platforms = [
   { name: "devfolio", color: "bg-blue-500" },
@@ -19,6 +20,7 @@ const Hackathons = () => {
   const [filteredHackathons, setFilteredHackathons] = useState<any[]>([]);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
     async function fetchHackathons() {
@@ -62,6 +64,23 @@ const Hackathons = () => {
   useEffect(() => {
     filterHackathons();
   }, [selectedPlatform, searchQuery, hackathons]);
+
+  // Add scroll to top button effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 500);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -124,14 +143,16 @@ const Hackathons = () => {
                     {hackathon.platform}
                   </Badge>
                   <CardTitle className="text-xl line-clamp-2">
-                    {hackathon.hackathon_name}
+                    <Link href={`/hackathon/${hackathon.id}`} className="hover:text-orange-600 transition-colors">
+                      {hackathon.hackathon_name}
+                    </Link>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 py-2 flex-1">
                   {hackathon.theme && (
                     <div className="flex items-start gap-2">
                       <span className="text-sm text-muted-foreground min-w-16">Theme:</span>
-                      <span className="text-sm font-medium">{hackathon.theme}</span>
+                      <span className="text-sm font-medium line-clamp-2">{hackathon.theme}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
@@ -147,22 +168,30 @@ const Hackathons = () => {
                 </CardContent>
                 <CardFooter className="flex gap-2 pt-2 mt-auto">
                   <Button size="sm" className="w-full" asChild>
+                    <Link href={`/hackathon/${hackathon.id}`} className="flex items-center justify-center">
+                      <Info className="h-4 w-4 mr-2" /> View Details
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="outline" asChild>
                     <a href={hackathon.hackathon_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                      <ExternalLink className="h-4 w-4 mr-2" /> Apply
+                      <ExternalLink className="h-4 w-4" />
                     </a>
                   </Button>
-                  {hackathon.website_link && (
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={hackathon.website_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                        <Globe className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  )}
                 </CardFooter>
               </FloatingCard>
             </motion.div>
           ))}
         </motion.div>
+      )}
+
+      {showScrollButton && (
+        <Button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 rounded-full p-3 shadow-lg hover:shadow-xl hover:bg-orange-600 bg-orange-500 text-white z-50"
+          size="icon"
+        >
+          <ArrowUp className="h-6 w-6" />
+        </Button>
       )}
     </div>
   );

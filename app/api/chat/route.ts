@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
       1. **Description** (Overview of the brief idea)
       2. **Implementation** (How it will be built e.g., Tech stack, resources, app or website, in-depth implementation)
       3. **Uniqueness** (Why this idea is innovative)
+      4. **Give relevant ApI links** (If applicable)
     `;
 
     const result = await chatSession.sendMessage(prompt);
